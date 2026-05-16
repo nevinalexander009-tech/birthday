@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Someone Special | 2026 Experience</title>
+    
+    <!-- External Assets -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg: #050505;
+            --accent: #ff3366;
+            --accent-soft: rgba(255, 51, 102, 0.2);
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-gold: #e2c275;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            cursor: none; /* Custom cursor implementation */
+        }
+
+        /* Custom Cursor */
+        #cursor {
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.1s;
+        }
+
+        /* Background Canvas */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            filter: blur(2px);
+        }
+
+        /* Screen Controller */
+        .screen {
+            position: absolute;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        .active { visibility: visible; opacity: 1; }
+
+        /* Typography */
+        .elegant-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 3.5rem;
+            background: linear-gradient(to right, #fff, var(--text-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 3rem;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Buttons */
+        .btn-main {
+            padding: 15px 40px;
+            border-radius: 50px;
+            border: 1px solid var(--accent);
+            background: transparent;
+            color: white;
+            font-weight: 600;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-main:hover {
+            background: var(--accent);
+            box-shadow: 0 0 30px var(--accent-soft);
+            transform: scale(1.05);
+        }
+
+        /* Gifts Bento Grid */
+        .gift-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 2rem;
+        }
+
+        .gift-item {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .gift-item:hover {
+            background: var(--accent-soft);
+            transform: translateY(-5px);
+        }
+
+        /* Game Styles */
+        #game-container {
+            width: 100%;
+            height: 300px;
+            position: relative;
+            background: rgba(255,255,255,0.02);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px dashed var(--glass-border);
+        }
+
+        .game-object {
+            position: absolute;
+            font-size: 2rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Music Controls */
+        #music-control {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 1000;
+            background: var(--glass);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--glass-border);
+        }
+
+        /* Tablet/Mobile Adjustments */
+        @media (max-width: 600px) {
+            .elegant-text { font-size: 2.2rem; }
+            .glass-card { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="cursor"></div>
+    <canvas id="bg-canvas"></canvas>
+
+    <div id="music-control" onclick="toggleMusic()">
+        <i class="fas fa-music"></i>
+    </div>
+    <audio id="bg-audio" loop>
+        <source src="Last-7-Minutes-MassTamilan.dev.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Screen 1: The Ritual -->
+    <div class="screen active" id="s1">
+        <h1 class="elegant-text">A moment for you.</h1>
+        <p style="color: var(--text-gold); margin-bottom: 2rem; letter-spacing: 3px;">2026 BIRTHDAY EDITION</p>
+        <button class="btn-main" onclick="startJourney()">UNLOCK THE MAGIC</button>
+    </div>
+
+    <!-- Screen 2: The Heartfelt Message -->
+    <div class="screen" id="s2">
+        <div class="glass-card">
+            <h2 class="elegant-text" style="font-size: 2.5rem;">Happy Birthday, <span id="user-name">Beautiful</span></h2>
+            <p id="typewriter" style="line-height: 1.8; color: #ccc; min-height: 100px;"></p>
+            <button class="btn-main" id="msg-btn" style="display: none; margin-top: 2rem;" onclick="showGifts()">OPEN YOUR GIFTS</button>
+        </div>
+    </div>
+
+    <!-- Screen 3: Virtual Gifts -->
+    <div class="screen" id="s3">
+        <h2 class="elegant-text">Your Virtual Keepsakes</h2>
+        <div class="gift-grid">
+            <div class="gift-item" onclick="revealGift('A Lifetime of Laughter')">
+                <i class="fas fa-gift" style="color: var(--accent);"></i>
+                <p>Box #1</p>
+            </div>
+            <div class="gift-item" onclick="revealGift('Infinite Support & Love')">
+                <i class="fas fa-heart" style="color: #ff3366;"></i>
+                <p>Box #2</p>
+            </div>
+            <div class="gift-item" onclick="revealGift('Endless Shared Adventures')">
+                <i class="fas fa-plane" style="color: #33ccff;"></i>
+                <p>Box #3</p>
+            </div>
+            <div class="gift-item" onclick="revealGift('A Reserved Spot in my Heart')">
+                <i class="fas fa-star" style="color: #ffcc00;"></i>
+                <p>Box #4</p>
+            </div>
+        </div>
+        <p id="gift-msg" style="margin-top: 20px; color: var(--text-gold); font-weight: bold;"></p>
+        <button class="btn-main" style="margin-top: 30px;" onclick="showGame()">ONE LAST THING...</button>
+    </div>
+
+    <!-- Screen 4: Interaction Game -->
+    <div class="screen" id="s4">
+        <h2 class="elegant-text" style="font-size: 2rem;">Catch the Wishes</h2>
+        <p style="margin-bottom: 10px;">Catch 10 hearts to unlock the grand finale!</p>
+        <div id="game-container">
+            <div id="score" style="position: absolute; top: 10px; right: 20px; font-weight: bold;">0/10</div>
+        </div>
+    </div>
+
+    <!-- Screen 5: Finale -->
+    <div class="screen" id="s5">
+        <div class="glass-card" style="border: 2px solid var(--accent);">
+            <h1 class="elegant-text" style="font-size: 4rem;">Happy Birthday!</h1>
+            <p style="font-size: 1.2rem; margin-bottom: 2rem;">May your 2026 be as extraordinary as you are.</p>
+            <div style="font-size: 3rem;">🎂✨💖</div>
+            <p style="margin-top: 2rem; font-style: italic; opacity: 0.7;">Forever and always.</p>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. Cursor Logic ---
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.1 });
+        });
+
+        // --- 2. Canvas Background ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function initCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+                this.color = Math.random() > 0.5 ? '#ff3366' : '#ffffff';
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if(this.x > canvas.width) this.x = 0;
+                if(this.y > canvas.height) this.y = 0;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = 0.3;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+
+        initCanvas();
+        for(let i=0; i<100; i++) particles.push(new Particle());
+        animate();
+
+        // --- 3. Journey Transitions ---
+        function switchScreen(from, to) {
+            gsap.to(from, { opacity: 0, scale: 0.9, duration: 0.8, onComplete: () => {
+                from.classList.remove('active');
+                to.classList.add('active');
+                gsap.fromTo(to, { opacity: 0, scale: 1.1 }, { opacity: 1, scale: 1, duration: 0.8 });
+            }});
+        }
+
+        function startJourney() {
+            document.getElementById('bg-audio').play();
+            switchScreen(document.getElementById('s1'), document.getElementById('s2'));
+            setTimeout(typeWriter, 1000);
+        }
+
+        // --- 4. Typewriter Logic ---
+        const message = "Today is all about you. Every moment you've spent making others smile, today the universe gives that joy back to you. You are more special than words can capture. Here's to another year of your beautiful light...";
+        let i = 0;
+        function typeWriter() {
+            if (i < message.length) {
+                document.getElementById("typewriter").innerHTML += message.charAt(i);
+                i++;
+                setTimeout(typeWriter, 50);
+            } else {
+                gsap.to("#msg-btn", { display: 'inline-block', opacity: 1, duration: 1, delay: 0.5 });
+            }
+        }
+
+        // --- 5. Gift Logic ---
+        function showGifts() {
+            switchScreen(document.getElementById('s2'), document.getElementById('s3'));
+        }
+
+        function revealGift(val) {
+            const display = document.getElementById('gift-msg');
+            display.style.opacity = 0;
+            setTimeout(() => {
+                display.innerText = "You unlocked: " + val;
+                gsap.to(display, { opacity: 1, duration: 0.5 });
+            }, 200);
+        }
+
+        // --- 6. Mini-Game Logic ---
+        let score = 0;
+        function showGame() {
+            switchScreen(document.getElementById('s3'), document.getElementById('s4'));
+            spawnHeart();
+        }
+
+        function spawnHeart() {
+            if(score >= 10) return;
+            const heart = document.createElement('div');
+            heart.className = 'game-object';
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 80 + 10 + '%';
+            heart.style.top = Math.random() * 80 + 10 + '%';
+            
+            heart.onclick = () => {
+                score++;
+                document.getElementById('score').innerText = `${score}/10`;
+                heart.remove();
+                if(score < 10) spawnHeart();
+                else finalize();
+            };
+            
+            document.getElementById('game-container').appendChild(heart);
+            gsap.from(heart, { scale: 0, duration: 0.5, ease: "back.out(1.7)" });
+        }
+
+        // --- 7. Finale ---
+        function finalize() {
+            switchScreen(document.getElementById('s4'), document.getElementById('s5'));
+            const end = Date.now() + (15 * 1000);
+
+            (function frame() {
+                confetti({
+                    particleCount: 3,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#ff3366', '#ffffff', '#ffcc00']
+                });
+                confetti({
+                    particleCount: 3,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#ff3366', '#ffffff', '#ffcc00']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
+
+        function toggleMusic() {
+            const audio = document.getElementById('bg-audio');
+            if(audio.paused) audio.play();
+            else audio.pause();
+        }
+
+        // Window Resize
+        window.addEventListener('resize', initCanvas);
+    </script>
+</body>
+</html>
